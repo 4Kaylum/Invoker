@@ -3,6 +3,9 @@ from models.spell import Spell
 
 
 class Invoker(object):
+    '''
+    The spell handler for the game at hand. This contains the score and goal of the player.
+    '''
 
     spell_list = [
         Spell('QQQ', 'Cold Snap'),
@@ -19,24 +22,26 @@ class Invoker(object):
 
     def __init__(self):
         self.score = 0
+        '''The score that the player has achieved.'''
+
         self.goal = choice(Invoker.spell_list)
+        '''The spell that the player needs to cast.'''
 
     def make_goal(self):
+        '''
+        Creates a new goal for the player to achieve.
+        '''
+
         self.goal = choice(Invoker.spell_list)
 
     def cast(self, spell_combo:list):
         '''
         Returns the spell of which the last three spell combinations create, or None of no
-        spell could be cast
+        spell could be cast.
 
-        Parameters:
-            spell_combo: list
-                The list of keys that have been pressed by the user
-                Only the last three will be used
-
-        Returns
-            Spell
-                The spell which the user has cast
+        :param list spell_combo: The list of keys that have been pressed by the user. Only the last three will be used.
+        :returns: The spell which the user has cast
+        :rtype: :class:`Spell`
         '''
 
         # Filter out any but the last three characters
