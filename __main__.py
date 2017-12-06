@@ -40,12 +40,14 @@ def main():
 	pressed_keys = []
 
 	counter = 0
-	draw = False
+	cast = False
+	first = False
+	last_cast = None
 	
 	while not window.is_closed:
 
 		# Add the frame ticker to the top left
-		window.draw_font('Tick {:X}'.format(counter), location=(0, 0), size=32)
+		# window.draw_font('Tick {:X}'.format(counter), location=(0, 0), size=32)
 
 		# Capture keydown and keyup events
 		for i in window.events:
@@ -55,11 +57,12 @@ def main():
 				if i.key in [K_q, K_w, K_e]:
 					text_colours[i.key] = Colour('red')
 					pressed_keys.append(i.unicode.upper())
-					draw = False
+					cast = False
 
 				# Cast key
 				elif i.key == K_r:
-					draw = True
+					cast = True
+					first = True
 
 			elif i.type == KEYUP:
 				if i.key in [K_q, K_w, K_e]:
@@ -70,11 +73,32 @@ def main():
 		window.draw_font('W', location=(542, 545), size=300, colour=text_colours[K_w])
 		window.draw_font('E', location=(777, 545), size=300, colour=text_colours[K_e])
 
-		# Temp outputs - last three characters and cast spell
-		window.draw_font(''.join(pressed_keys[-3:]), location=(700, 0), size=150, colour=Colour('blue'))
+		# Output the goal spell you want to achieve
+		window.draw_font('Goal: {.goal.name}'.format(invoker), location=(0, 100), size=150, colour=Colour('black'))
+
+		# Output the socre
+		window.draw_font('Score: {.score}'.format(invoker), location=(0, 0), size=150, colour=Colour('black'))
+
+		# Temp output the last three characters
+		window.draw_font(''.join(pressed_keys[-3:]), location=(0, 200), size=150, colour=Colour('blue'))
+
+		# Get the working spell, if any
 		x = invoker.cast(pressed_keys)
-		if draw:
-			window.draw_font('{0!s}'.format(x), location=(700, 100), size=150, colour=Colour('blue'))
+
+		# Determine whether a spell has been cast and no other buttons pressed
+		if cast:
+
+			# Run the first time that there has been no cast spell
+			if first:
+				last_cast = x
+				first = False
+				if last_cast == invoker.goal: invoker.score += 1
+				invoker.make_goal()
+
+			# The spell that's been cast
+			pressed_keys = []
+			l = (0, 300) if pressed_keys else (0, 200)
+			window.draw_font('Cast: {0!s}'.format(last_cast), location=l, size=150, colour=Colour('blue'))
 
 		# Run the program
 		window.run()
