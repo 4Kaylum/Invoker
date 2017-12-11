@@ -1,5 +1,6 @@
 __pycache__
 Old
+*.sublime-*
 
 # Gitignore for Sphinx
 index.rst

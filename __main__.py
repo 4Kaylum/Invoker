@@ -1,8 +1,10 @@
 from pygame import Color as Colour
 from pygame import KEYDOWN, KEYUP, K_q, K_w, K_e, K_r
+from pygame import mouse
 from models.window import Window 
 from models.invoker import Invoker
 from models.block import Block
+from models.sizer import Sizer
 
 
 def main():
@@ -11,29 +13,37 @@ def main():
 	'''
 
 	# Main globals
-	window = Window()
+	DIMENSIONS = (1280, 720)
+	FONT_SIZE = 100
+	window = Window(dimensions=DIMENSIONS)
 	invoker = Invoker()
+	sizer = Sizer(dimensions=DIMENSIONS, font_size=FONT_SIZE)
 
 	# Background block
-	x = Block(dimensions=(620, 175))
-	x.rect.midbottom = (640, 720)
+	a = Block(dimensions=sizer('34%', '14%'))
+	a.rect.midbottom = sizer('50%', '100%')
 
 	# Left line
-	y = Block(dimensions=(5, 175), colour=Colour('white'))
-	y.rect.midbottom = (640 - 110, 720)
+	b = Block(dimensions=sizer('5px', '14%'), colour=Colour('white'))
+	b.rect.midbottom = sizer('41.5%', '100%')
+
+	# Middle line
+	c = Block(dimensions=sizer('5px', '14%'), colour=Colour('white'))
+	c.rect.midbottom = sizer('50%', '100%')
 
 	# Right line
-	z = Block(dimensions=(5, 175), colour=Colour('white'))
-	z.rect.midbottom = (640 + 110, 720)
+	d = Block(dimensions=sizer('5px', '14%'), colour=Colour('white'))
+	d.rect.midbottom = sizer('58.5%', '100%')
 
 	# Add to window
-	window.add_sprites(x, y, z)
+	window.add_sprites(a, b, c, d)
 
 	# Text colours
 	text_colours = {
 		K_q: Colour('white'),
 		K_w: Colour('white'),
 		K_e: Colour('white'),
+		K_r: Colour('white'),
 	}
 
 	# Pressed keys cache
@@ -61,26 +71,33 @@ def main():
 
 				# Cast key
 				elif i.key == K_r:
-					cast = True
-					first = True
+					text_colours[i.key] = Colour('red')
+					if len(pressed_keys) >= 3:
+						cast = True
+						first = True
 
 			elif i.type == KEYUP:
-				if i.key in [K_q, K_w, K_e]:
+				if i.key in [K_q, K_w, K_e, K_r]:
 					text_colours[i.key] = Colour('white')
 
+		# Get the font sizes
+		full_size = int(sizer('1em'))
+		half_size = int(sizer('.5em'))
+
 		# Draw the QWE onto the screen
-		window.draw_font('Q', location=(346, 540), size=300, colour=text_colours[K_q])
-		window.draw_font('W', location=(542, 545), size=300, colour=text_colours[K_w])
-		window.draw_font('E', location=(777, 545), size=300, colour=text_colours[K_e])
+		window.draw_font('Q', location=sizer('35.0%', '88.9%'), size=full_size, colour=text_colours[K_q])
+		window.draw_font('W', location=sizer('43.3%', '89.4%'), size=full_size, colour=text_colours[K_w])
+		window.draw_font('E', location=sizer('52.5%', '89.2%'), size=full_size, colour=text_colours[K_e])
+		window.draw_font('R', location=sizer('60.8%', '89.4%'), size=full_size, colour=text_colours[K_r])
 
 		# Output the goal spell you want to achieve
-		window.draw_font('Goal: {.goal.name}'.format(invoker), location=(0, 100), size=150, colour=Colour('black'))
+		window.draw_font('Goal: {.goal.name}'.format(invoker), location=sizer(5, '.5em'), size=half_size, colour=Colour('black'))
 
 		# Output the socre
-		window.draw_font('Score: {.score}'.format(invoker), location=(0, 0), size=150, colour=Colour('black'))
+		window.draw_font('Score: {.score}'.format(invoker), location=sizer(5, 5), size=half_size, colour=Colour('black'))
 
 		# Temp output the last three characters
-		window.draw_font(''.join(pressed_keys[-3:]), location=(0, 200), size=150, colour=Colour('blue'))
+		window.draw_font(''.join(pressed_keys[-3:]), location=sizer(5, '1em'), size=half_size, colour=Colour('black'))
 
 		# Get the working spell, if any
 		x = invoker.cast(pressed_keys)
@@ -95,14 +112,14 @@ def main():
 				if last_cast == invoker.goal: invoker.score += 1
 				invoker.make_goal()
 
-			# The spell that's been cast
+			# Draw spell onto screen
 			pressed_keys = []
-			l = (0, 300) if pressed_keys else (0, 200)
-			window.draw_font('Cast: {0!s}'.format(last_cast), location=l, size=150, colour=Colour('blue'))
+			l = sizer(5, '1.5em') if pressed_keys else sizer(5, '1em')
+			window.draw_font('Cast: {0!s}'.format(last_cast), location=l, size=half_size, colour=Colour('black'))
 
 		# Run the program
 		window.run()
-		counter += 1
+		counter += 1  # Frame tick
 
 
 if __name__ == '__main__':

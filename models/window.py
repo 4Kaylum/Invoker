@@ -12,21 +12,25 @@ class Window(object):
     '''
 
     def __init__(self, *, dimensions:tuple=(1280, 720), caption:str="None", fps:int=30, colour:pygame.Color=pygame.Color('white')):
+        # Init all the relevant Pygame stuff
         pygame.init()  
         pygame.font.init()  
+
+        # Set the FPS
         self.clock = pygame.time.Clock() 
         self.fps = fps
-        self.events = []
-        self.colour = colour
 
         # Create the window itself
         self.window = pygame.display.set_mode(dimensions)
         pygame.display.set_caption(caption)
+        self.colour = colour
         self.window.fill(colour)
 
-        # Group of sprites
+        # All for internal usage
         self.sprites = pygame.sprite.Group()
         self.text_boxes = []
+        self.events = []
+        self.dimensions = dimensions  # Read only
 
     def set_caption(self, caption:str):
         '''
