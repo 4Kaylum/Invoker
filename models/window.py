@@ -1,4 +1,6 @@
 import pygame
+from pygame import Rect
+from pygame.locals import RESIZABLE, VIDEORESIZE
 
 
 class Window(object):
@@ -11,7 +13,7 @@ class Window(object):
     :param pygame.Color colour: (optional) The background colour for the window.
     '''
 
-    def __init__(self, *, dimensions:tuple=(1280, 720), caption:str="None", fps:int=30, colour:pygame.Color=pygame.Color('white')):
+    def __init__(self, *, dimensions:tuple=(1280, 720), caption:str="None", fps:int=30, colour:pygame.Color=pygame.Color('white'), resizable=False):
         # Init all the relevant Pygame stuff
         pygame.init()  
         pygame.font.init()  
@@ -21,7 +23,10 @@ class Window(object):
         self.fps = fps
 
         # Create the window itself
-        self.window = pygame.display.set_mode(dimensions)
+        if resizable:
+            self.window = pygame.display.set_mode(dimensions, RESIZABLE)
+        else:
+            self.window = pygame.display.set_mode(dimensions)
         pygame.display.set_caption(caption)
         self.colour = colour
         self.window.fill(colour)
@@ -30,7 +35,7 @@ class Window(object):
         self.sprites = pygame.sprite.Group()
         self.text_boxes = []
         self.events = []
-        self.dimensions = dimensions  # Read only
+        self.resizable = resizable
 
     def set_caption(self, caption:str):
         '''
@@ -112,7 +117,7 @@ class Window(object):
             self.window.blit(i, o)
         self.text_boxes = []
 
-    def draw_font(self, text:str, location:tuple, *, size:int=16, colour:pygame.Color=pygame.Color('black')):
+    def draw_font(self, text:str, location:tuple, *, size:int=16, colour:pygame.Color=pygame.Color('black'), dimensions:tuple=None):
         '''
         Draw font onto the screen at a given coordinate
 
@@ -122,9 +127,12 @@ class Window(object):
         :param pygame.Color colour: (optional) The colour of the text.
         '''
 
-        font_obj = pygame.font.Font(None, size)
+        font_obj = pygame.font.Font(None, int(size))
         font = font_obj.render(text, 1, colour)
         font.get_rect().center = location
+        if dimensions:
+            m = font.get_rect()
+            m.inflate(m.width - dimensions[0], m.height - dimensions[1])
         self.text_boxes.append((font, location))
 
     def run(self, draw:bool=True):
@@ -140,3 +148,13 @@ class Window(object):
             pygame.display.flip()
         self.clock.tick(self.fps)
         self.events = pygame.event.get()
+
+        # Update the window attr if resized
+        for e in self.events:
+            if e.type == VIDEORESIZE:
+                x, y = e.dict['size']
+                y = int((x/16)*9)
+                if self.resizable:
+                    self.window = pygame.display.set_mode((x, y), RESIZABLE)
+                else:
+                    self.window = pygame.display.set_mode((x, y))

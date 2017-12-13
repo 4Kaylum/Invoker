@@ -15,28 +15,9 @@ def main():
 	# Main globals
 	DIMENSIONS = (1280, 720)
 	FONT_SIZE = 100
-	window = Window(dimensions=DIMENSIONS)
+	window = Window(dimensions=DIMENSIONS, resizable=True)
 	invoker = Invoker()
-	sizer = Sizer(dimensions=DIMENSIONS, font_size=FONT_SIZE)
-
-	# Background block
-	a = Block(dimensions=sizer('34%', '14%'))
-	a.rect.midbottom = sizer('50%', '100%')
-
-	# Left line
-	b = Block(dimensions=sizer('5px', '14%'), colour=Colour('white'))
-	b.rect.midbottom = sizer('41.5%', '100%')
-
-	# Middle line
-	c = Block(dimensions=sizer('5px', '14%'), colour=Colour('white'))
-	c.rect.midbottom = sizer('50%', '100%')
-
-	# Right line
-	d = Block(dimensions=sizer('5px', '14%'), colour=Colour('white'))
-	d.rect.midbottom = sizer('58.5%', '100%')
-
-	# Add to window
-	window.add_sprites(a, b, c, d)
+	sizer = Sizer(window=window, font_size=FONT_SIZE)
 
 	# Text colours
 	text_colours = {
@@ -57,7 +38,29 @@ def main():
 	while not window.is_closed:
 
 		# Add the frame ticker to the top left
-		# window.draw_font('Tick {:X}'.format(counter), location=(0, 0), size=32)
+		# window.draw_font('Tick {:X}'.format(counter), location=(0, 250), size=32)
+
+		# Create all the sprites needed
+		window.sprites.empty()
+
+		# Background block
+		a = Block(dimensions=sizer('34%', '14%'))
+		a.rect.midbottom = sizer('50%', '100%')
+
+		# Left line
+		b = Block(dimensions=sizer('5px', '14%'), colour=Colour('white'))
+		b.rect.midbottom = sizer('41.5%', '100%')
+
+		# Middle line
+		c = Block(dimensions=sizer('5px', '14%'), colour=Colour('white'))
+		c.rect.midbottom = sizer('50%', '100%')
+
+		# Right line
+		d = Block(dimensions=sizer('5px', '14%'), colour=Colour('white'))
+		d.rect.midbottom = sizer('58.5%', '100%')
+
+		# Add to window
+		window.add_sprites(a, b, c, d)
 
 		# Capture keydown and keyup events
 		for i in window.events:

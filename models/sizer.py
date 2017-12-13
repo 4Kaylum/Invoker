@@ -6,9 +6,15 @@ class Sizer(object):
 	:param tuple dimensions: The dimensions that the window is in - supports percentages
 	'''
 
-	def __init__(self, dimensions:tuple=(1280, 720), font_size=100):
-		self.dimensions = dimensions
+	def __init__(self, dimensions:tuple=(1280, 720), font_size=100, window=None):
+		if window:
+			self.dimensions = window.window.get_size()
+		else:
+			self.dimensions = dimensions
 		self.font_size = 100
+		self._original_width = self.dimensions[0]
+		self.font_ratio = lambda: self.dimensions[0] / self._original_width
+		self.window = window
 
 	def __call__(self, *location):
 		'''
@@ -19,6 +25,9 @@ class Sizer(object):
 		:rtype: tuple
 		'''
 
+		if self.window:
+			self.dimensions = self.window.window.get_size()
+
 		location = list(location)
 		for o, i in enumerate(location):
 			if type(i) in [float, int]:
@@ -28,7 +37,7 @@ class Sizer(object):
 			elif '%' in i:
 				location[o] = self.dimensions[o] * (float(i[:-1]) / 100)
 			elif 'em' in i:
-				location[o] = self.font_size * float(i[:-2])
+				location[o] = self.font_ratio() * self.font_size * float(i[:-2])
 			else:
 				location[o] = float(i)
 		if len(location) == 1:

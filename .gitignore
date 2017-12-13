@@ -9,3 +9,10 @@ Makefile
 conf.py
 build
 source
+
+# Gitignore for venv
+pyvenv.cfg
+Scripts
+Lib
+Include
+pip-selfcheck.json
